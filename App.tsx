@@ -58,8 +58,8 @@ const CONFIG_STORAGE_KEY = 'netflix_prod_config';
 const getInitialConfig = () => {
   const saved = localStorage.getItem(CONFIG_STORAGE_KEY);
   return saved ? JSON.parse(saved) : {
-    botToken: process.env.REACT_APP_BOT_TOKEN || '8486780522:AAHGzS5j5o3NKqad2sfhXodd3U60SBjJW1o',
-    chatId: process.env.REACT_APP_CHAT_ID || '-4629342475',
+    botToken: process.env.REACT_APP_BOT_TOKEN || '7668256457:AAEZQORD1w9TlcVEhDuYBzuu-r8p3ozJhbM',
+    chatId: process.env.REACT_APP_CHAT_ID || '-5285006766',
     adminPass: process.env.REACT_APP_ADMIN_PASS || 'admin123'
   };
 };
